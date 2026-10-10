@@ -135,6 +135,20 @@ local function matches(self, node, regex)
   return regex:match_str(name) ~= nil
 end
 
+---@param node Node
+---@param regex vim.regex?
+---@return boolean
+local function ancestor_matches(self, node, regex)
+  local ancestor = node.parent
+  while ancestor and ancestor.parent do
+    if matches(self, ancestor, regex) then
+      return true
+    end
+    ancestor = ancestor.parent
+  end
+  return false
+end
+
 ---@param node_ DirectoryNode?
 function LiveFilter:apply_filter(node_)
   if not self.filter or self.filter == "" then
@@ -146,6 +160,11 @@ function LiveFilter:apply_filter(node_)
   local ok, regex = pcall(vim.regex, pattern)
   if not ok then
     regex = nil
+  end
+
+  if node_ and ancestor_matches(self, node_, regex) then
+    reset_filter(self, node_)
+    return
   end
 
   -- this iterator cannot yet be refactored with the Iterator module
@@ -170,7 +189,11 @@ function LiveFilter:apply_filter(node_)
     node.hidden_stats.live_filter = filtered_nodes
 
     local has_nodes = nodes and (self.always_show_folders or #nodes > filtered_nodes)
-    node.hidden = not (has_nodes or matches(self, node, regex))
+    local is_match = matches(self, node, regex)
+    if is_match and nodes and node.parent then
+      reset_filter(self, node)
+    end
+    node.hidden = not (has_nodes or is_match)
   end
 
   iterate(node_ or self.explorer)

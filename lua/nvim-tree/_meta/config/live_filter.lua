@@ -5,6 +5,8 @@ error("Cannot require a meta file")
 
 --- Live filter allows you to filter the tree nodes dynamically using [regular-expression] matching.
 ---
+--- When a folder's name matches, everything under it is shown.
+---
 --- This feature is bound to the `f` key by default. The filter can be cleared with the `F` key by default.
 ---
 ---@class nvim_tree.config.live_filter
