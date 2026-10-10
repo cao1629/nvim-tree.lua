@@ -291,12 +291,16 @@ function Builder:build_header()
     self.index = 1
   end
 
-  if self.explorer.live_filter.filter then
-    local filter_line = string.format("%s/%s/", self.explorer.opts.live_filter.prefix, self.explorer.live_filter.filter)
+  local live_filter = self.explorer.live_filter
+  if live_filter.filter then
+    local filter_line = string.format("%s/%s/", self.explorer.opts.live_filter.prefix, live_filter.filter)
+    local value_end = string.len(filter_line)
+    filter_line = string.format("%s %s", filter_line, live_filter.regex_mode and "regex" or "fuzzy")
     table.insert(self.lines, filter_line)
     local prefix_length = string.len(self.explorer.opts.live_filter.prefix)
     self:insert_highlight({ "NvimTreeLiveFilterPrefix" }, 0,             prefix_length)
-    self:insert_highlight({ "NvimTreeLiveFilterValue" },  prefix_length, string.len(filter_line))
+    self:insert_highlight({ "NvimTreeLiveFilterValue" },  prefix_length, value_end)
+    self:insert_highlight({ "NvimTreeLiveFilterPrefix" }, value_end + 1, string.len(filter_line))
     self.index = self.index + 1
   end
 end

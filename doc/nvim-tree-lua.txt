@@ -1443,7 +1443,8 @@ Config: live_filter                             *nvim-tree-config-live-filter*
     When a folder's name matches, everything under it is shown. While typing,
     the cursor stays on the first match; `<Down>`/`<C-n>` and `<Up>`/`<C-p>`
     move it through the tree, and leaving the filter input keeps it there.
-    `<C-c>` leaves the filter input like `<Esc>`.
+    `<C-c>` leaves the filter input like `<Esc>`. `<C-g>` switches between
+    fuzzy and regex matching; the filter line shows the current mode.
 
     This feature is bound to the `f` key by default. The filter can be cleared
     with the `F` key by default.
@@ -1458,11 +1459,12 @@ Config: live_filter                             *nvim-tree-config-live-filter*
                                 return to their previous state when the filter
                                 is cleared, apart from the ancestors of the
                                 node under the cursor.
-      • {fuzzy}?                (`boolean`, default: `false`) Match the filter
-                                as a fuzzy pattern instead of a
-                                |regular-expression|: its characters must
-                                appear in the name in order, case is ignored
-                                and space separated terms must all match.
+      • {fuzzy}?                (`boolean`, default: `false`) Start each
+                                filter in fuzzy mode instead of
+                                |regular-expression| mode. In fuzzy mode the
+                                characters must appear in the name in order,
+                                case is ignored and space separated terms must
+                                all match.
       • {prefix}?               (`string`, default: `"[FILTER]: "`) Prefix of
                                 the filter displayed in the buffer.
 

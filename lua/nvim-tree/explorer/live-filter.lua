@@ -11,6 +11,7 @@ local DirectoryNode = require("nvim-tree.node.directory")
 ---@field prefix string
 ---@field always_show_folders boolean
 ---@field fuzzy boolean
+---@field regex_mode boolean
 ---@field expand_folders boolean
 ---@field filter string
 ---@field prev_focused_node? Node
@@ -30,6 +31,7 @@ function LiveFilter:new(args)
   self.prefix = self.explorer.opts.live_filter.prefix
   self.always_show_folders = self.explorer.opts.live_filter.always_show_folders
   self.fuzzy = self.explorer.opts.live_filter.fuzzy
+  self.regex_mode = not self.fuzzy
   self.expand_folders = self.explorer.opts.live_filter.expand_folders
   self.filter = nil
   self.prev_focused_node = nil
@@ -93,7 +95,7 @@ end
 
 ---@return vim.regex?
 local function filter_regex(self)
-  local pattern = self.fuzzy and fuzzy_pattern(self.filter) or self.filter
+  local pattern = self.regex_mode and self.filter or fuzzy_pattern(self.filter)
   local ok, regex = pcall(vim.regex, pattern)
   if ok then
     return regex
@@ -166,6 +168,7 @@ end
 
 local overlay_bufnr = 0
 local overlay_winnr = 0
+local overlay_ns = vim.api.nvim_create_namespace("NvimTreeLiveFilterMode")
 
 local function remove_overlay(self)
   if config.g.view.float.enable and config.g.view.float.quit_on_focus_loss then
@@ -252,6 +255,26 @@ local function record_char(self)
   end)
 end
 
+local function show_mode(self)
+  if overlay_bufnr == 0 or not vim.api.nvim_buf_is_valid(overlay_bufnr) then
+    return
+  end
+
+  vim.api.nvim_buf_clear_namespace(overlay_bufnr, overlay_ns, 0, -1)
+  vim.api.nvim_buf_set_extmark(overlay_bufnr, overlay_ns, 0, 0, {
+    virt_text     = { { self.regex_mode and "regex" or "fuzzy", "NvimTreeLiveFilterPrefix" } },
+    virt_text_pos = "right_align",
+  })
+end
+
+local function toggle_mode(self)
+  self.regex_mode = not self.regex_mode
+  self:apply_filter()
+  self.explorer.renderer:draw()
+  focus_first_match(self)
+  show_mode(self)
+end
+
 local function configure_buffer_overlay(self)
   overlay_bufnr = vim.api.nvim_create_buf(false, true)
 
@@ -270,6 +293,10 @@ local function configure_buffer_overlay(self)
 
   vim.api.nvim_buf_set_keymap(overlay_bufnr, "i", "<CR>", "<cmd>stopinsert<CR>", {})
   vim.api.nvim_buf_set_keymap(overlay_bufnr, "i", "<C-c>", "<cmd>stopinsert<CR>", {})
+
+  vim.keymap.set("i", "<C-g>", function()
+    toggle_mode(self)
+  end, { buffer = overlay_bufnr })
 
   for key, delta in pairs({ ["<Down>"] = 1, ["<C-n>"] = 1, ["<Up>"] = -1, ["<C-p>"] = -1 }) do
     vim.keymap.set("i", key, function()
@@ -314,12 +341,17 @@ local function create_overlay(self)
   vim.api.nvim_set_option_value("filetype",   "NvimTreeFilter", { buf = overlay_bufnr })
 
   vim.api.nvim_buf_set_lines(overlay_bufnr, 0, -1, false, { self.filter })
+  show_mode(self)
   vim.cmd("startinsert")
   vim.api.nvim_win_set_cursor(overlay_winnr, { 1, #self.filter + 1 })
 end
 
 function LiveFilter:start_filtering()
   self.prev_focused_node = self.explorer:get_node_at_cursor()
+
+  if not self.filter then
+    self.regex_mode = not self.fuzzy
+  end
 
   if self.expand_folders and not self.filter then
     self.open_folders = {}

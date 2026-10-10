@@ -5,7 +5,7 @@ error("Cannot require a meta file")
 
 --- Live filter allows you to filter the tree nodes dynamically using [regular-expression] matching.
 ---
---- When a folder's name matches, everything under it is shown. While typing, the cursor stays on the first match; `<Down>`/`<C-n>` and `<Up>`/`<C-p>` move it through the tree, and leaving the filter input keeps it there. `<C-c>` leaves the filter input like `<Esc>`.
+--- When a folder's name matches, everything under it is shown. While typing, the cursor stays on the first match; `<Down>`/`<C-n>` and `<Up>`/`<C-p>` move it through the tree, and leaving the filter input keeps it there. `<C-c>` leaves the filter input like `<Esc>`. `<C-g>` switches between fuzzy and regex matching; the filter line shows the current mode.
 ---
 --- This feature is bound to the `f` key by default. The filter can be cleared with the `F` key by default.
 ---
@@ -19,7 +19,7 @@ error("Cannot require a meta file")
 ---(default: `true`)
 ---@field always_show_folders? boolean
 ---
----Match the filter as a fuzzy pattern instead of a [regular-expression]: its characters must appear in the name in order, case is ignored and space separated terms must all match.
+---Start each filter in fuzzy mode instead of [regular-expression] mode. In fuzzy mode the characters must appear in the name in order, case is ignored and space separated terms must all match.
 ---(default: `false`)
 ---@field fuzzy? boolean
 ---
