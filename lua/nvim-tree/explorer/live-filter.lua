@@ -78,33 +78,6 @@ local function reset_filter(self, node_)
     :iterate()
 end
 
-local overlay_bufnr = 0
-local overlay_winnr = 0
-
-local function remove_overlay(self)
-  if config.g.view.float.enable and config.g.view.float.quit_on_focus_loss then
-    -- return to normal nvim-tree float behaviour when filter window is closed
-    vim.api.nvim_create_autocmd("WinLeave", {
-      pattern = "NvimTree_*",
-      group = vim.api.nvim_create_augroup("NvimTree", { clear = false }),
-      callback = function()
-        if utils.is_nvim_tree_buf(0) then
-          view.close()
-        end
-      end,
-    })
-  end
-
-  vim.api.nvim_win_close(overlay_winnr, true)
-  vim.api.nvim_buf_delete(overlay_bufnr, { force = true })
-  overlay_bufnr = 0
-  overlay_winnr = 0
-
-  if self.filter == "" then
-    self:clear_filter()
-  end
-end
-
 ---@param filter string
 ---@return string
 local function fuzzy_pattern(filter)
@@ -116,6 +89,15 @@ local function fuzzy_pattern(filter)
     table.insert(terms, ".*" .. table.concat(chars, [[.\{-}]]))
   end
   return [[\c]] .. table.concat(terms, [[\&]])
+end
+
+---@return vim.regex?
+local function filter_regex(self)
+  local pattern = self.fuzzy and fuzzy_pattern(self.filter) or self.filter
+  local ok, regex = pcall(vim.regex, pattern)
+  if ok then
+    return regex
+  end
 end
 
 ---@param node Node
@@ -149,6 +131,49 @@ local function ancestor_matches(self, node, regex)
   return false
 end
 
+local function focus_first_match(self)
+  local regex = filter_regex(self)
+  local line = require("nvim-tree.core").get_nodes_starting_line()
+  local nodes_by_line = self.explorer:get_nodes_by_line(line)
+  while nodes_by_line[line] do
+    if matches(self, nodes_by_line[line], regex) then
+      view.set_cursor({ line, 0 })
+      return
+    end
+    line = line + 1
+  end
+end
+
+local overlay_bufnr = 0
+local overlay_winnr = 0
+
+local function remove_overlay(self)
+  if config.g.view.float.enable and config.g.view.float.quit_on_focus_loss then
+    -- return to normal nvim-tree float behaviour when filter window is closed
+    vim.api.nvim_create_autocmd("WinLeave", {
+      pattern = "NvimTree_*",
+      group = vim.api.nvim_create_augroup("NvimTree", { clear = false }),
+      callback = function()
+        if utils.is_nvim_tree_buf(0) then
+          view.close()
+        end
+      end,
+    })
+  end
+
+  vim.api.nvim_win_close(overlay_winnr, true)
+  vim.api.nvim_buf_delete(overlay_bufnr, { force = true })
+  overlay_bufnr = 0
+  overlay_winnr = 0
+
+  if self.filter == "" then
+    self:clear_filter()
+    return
+  end
+
+  focus_first_match(self)
+end
+
 ---@param node_ DirectoryNode?
 function LiveFilter:apply_filter(node_)
   if not self.filter or self.filter == "" then
@@ -156,11 +181,7 @@ function LiveFilter:apply_filter(node_)
     return
   end
 
-  local pattern = self.fuzzy and fuzzy_pattern(self.filter) or self.filter
-  local ok, regex = pcall(vim.regex, pattern)
-  if not ok then
-    regex = nil
-  end
+  local regex = filter_regex(self)
 
   if node_ and ancestor_matches(self, node_, regex) then
     reset_filter(self, node_)

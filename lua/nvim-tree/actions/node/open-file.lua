@@ -438,11 +438,15 @@ local function edit(mode, node, edit_opts)
   end
 end
 
----@param node Node
+---@param node Node?
 ---@param mode NodeOpenFileMode
 ---@param toggle_group boolean?
 ---@param edit_opts nvim_tree.api.node.open.Opts?
 local function open_or_expand_or_dir_up(node, mode, toggle_group, edit_opts)
+  if not node then
+    return
+  end
+
   local root = node:as(RootNode)
   local dir = node:as(DirectoryNode)
 
