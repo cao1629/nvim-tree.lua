@@ -5,7 +5,7 @@ error("Cannot require a meta file")
 
 --- Live filter allows you to filter the tree nodes dynamically using [regular-expression] matching.
 ---
---- When a folder's name matches, everything under it is shown. Leaving the filter input moves the cursor to the first match.
+--- When a folder's name matches, everything under it is shown. While typing, the cursor stays on the first match; `<Down>`/`<C-n>` and `<Up>`/`<C-p>` move it through the tree, and leaving the filter input keeps it there. `<C-c>` leaves the filter input like `<Esc>`.
 ---
 --- This feature is bound to the `f` key by default. The filter can be cleared with the `F` key by default.
 ---

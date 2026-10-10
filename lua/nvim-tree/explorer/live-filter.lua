@@ -144,6 +144,26 @@ local function focus_first_match(self)
   end
 end
 
+---@param line integer
+---@return boolean
+local function is_node_line(self, line)
+  local first_line = require("nvim-tree.core").get_nodes_starting_line()
+  return self.explorer:get_nodes_by_line(first_line)[line] ~= nil
+end
+
+---@param delta integer
+local function move_cursor(self, delta)
+  local winnr = view.get_winnr()
+  if not winnr then
+    return
+  end
+
+  local line = vim.api.nvim_win_get_cursor(winnr)[1] + delta
+  if is_node_line(self, line) then
+    view.set_cursor({ line, 0 })
+  end
+end
+
 local overlay_bufnr = 0
 local overlay_winnr = 0
 
@@ -171,7 +191,10 @@ local function remove_overlay(self)
     return
   end
 
-  focus_first_match(self)
+  local winnr = view.get_winnr()
+  if not (winnr and is_node_line(self, vim.api.nvim_win_get_cursor(winnr)[1])) then
+    focus_first_match(self)
+  end
 end
 
 ---@param node_ DirectoryNode?
@@ -225,6 +248,7 @@ local function record_char(self)
     self.filter = vim.api.nvim_buf_get_lines(overlay_bufnr, 0, -1, false)[1]
     self:apply_filter()
     self.explorer.renderer:draw()
+    focus_first_match(self)
   end)
 end
 
@@ -245,6 +269,13 @@ local function configure_buffer_overlay(self)
   })
 
   vim.api.nvim_buf_set_keymap(overlay_bufnr, "i", "<CR>", "<cmd>stopinsert<CR>", {})
+  vim.api.nvim_buf_set_keymap(overlay_bufnr, "i", "<C-c>", "<cmd>stopinsert<CR>", {})
+
+  for key, delta in pairs({ ["<Down>"] = 1, ["<C-n>"] = 1, ["<Up>"] = -1, ["<C-p>"] = -1 }) do
+    vim.keymap.set("i", key, function()
+      move_cursor(self, delta)
+    end, { buffer = overlay_bufnr })
+  end
 end
 
 ---@return integer
