@@ -10,8 +10,11 @@ local DirectoryNode = require("nvim-tree.node.directory")
 ---@field explorer Explorer
 ---@field prefix string
 ---@field always_show_folders boolean
+---@field fuzzy boolean
+---@field expand_folders boolean
 ---@field filter string
 ---@field prev_focused_node? Node
+---@field open_folders? table<string, boolean>
 local LiveFilter = Class:extend()
 
 ---@class LiveFilter
@@ -26,8 +29,28 @@ function LiveFilter:new(args)
   self.explorer = args.explorer
   self.prefix = self.explorer.opts.live_filter.prefix
   self.always_show_folders = self.explorer.opts.live_filter.always_show_folders
+  self.fuzzy = self.explorer.opts.live_filter.fuzzy
+  self.expand_folders = self.explorer.opts.live_filter.expand_folders
   self.filter = nil
   self.prev_focused_node = nil
+  self.open_folders = nil
+end
+
+---@param nodes Node[]
+---@param fn fun(dir: DirectoryNode)
+local function for_each_folder(nodes, fn)
+  Iterator.builder(nodes)
+    :hidden()
+    :applier(function(node)
+      local dir = node:as(DirectoryNode)
+      if dir then
+        fn(dir)
+      end
+    end)
+    :recursor(function(node)
+      return node.group_next and { node.group_next } or node.nodes
+    end)
+    :iterate()
 end
 
 ---@param node_ Node?
@@ -82,16 +105,34 @@ local function remove_overlay(self)
   end
 end
 
+---@param filter string
+---@return string
+local function fuzzy_pattern(filter)
+  local terms = {}
+  for term in filter:gmatch("%S+") do
+    local chars = vim.tbl_map(function(char)
+      return vim.fn.escape(char, [[\.*~[]^$]])
+    end, vim.fn.split(term, [[\zs]]))
+    table.insert(terms, ".*" .. table.concat(chars, [[.\{-}]]))
+  end
+  return [[\c]] .. table.concat(terms, [[\&]])
+end
+
 ---@param node Node
+---@param regex vim.regex?
 ---@return boolean
-local function matches(self, node)
+local function matches(self, node, regex)
   if not self.explorer.filters.enabled then
     return true
   end
 
+  if not regex then
+    return false
+  end
+
   local path = node.absolute_path
   local name = vim.fn.fnamemodify(path, ":t")
-  return vim.regex(self.filter):match_str(name) ~= nil
+  return regex:match_str(name) ~= nil
 end
 
 ---@param node_ DirectoryNode?
@@ -99,6 +140,12 @@ function LiveFilter:apply_filter(node_)
   if not self.filter or self.filter == "" then
     reset_filter(self, node_)
     return
+  end
+
+  local pattern = self.fuzzy and fuzzy_pattern(self.filter) or self.filter
+  local ok, regex = pcall(vim.regex, pattern)
+  if not ok then
+    regex = nil
   end
 
   -- this iterator cannot yet be refactored with the Iterator module
@@ -123,8 +170,7 @@ function LiveFilter:apply_filter(node_)
     node.hidden_stats.live_filter = filtered_nodes
 
     local has_nodes = nodes and (self.always_show_folders or #nodes > filtered_nodes)
-    local ok, is_match = pcall(matches, self, node)
-    node.hidden = not (has_nodes or (ok and is_match))
+    node.hidden = not (has_nodes or matches(self, node, regex))
   end
 
   iterate(node_ or self.explorer)
@@ -199,6 +245,17 @@ end
 
 function LiveFilter:start_filtering()
   self.prev_focused_node = self.explorer:get_node_at_cursor()
+
+  if self.expand_folders and not self.filter then
+    self.open_folders = {}
+    for_each_folder(self.explorer.nodes, function(dir)
+      if dir.open then
+        self.open_folders[dir.absolute_path] = true
+      end
+    end)
+    self.explorer:expand_all()
+  end
+
   self.filter = self.filter or ""
 
   self.explorer.renderer:draw()
@@ -216,6 +273,21 @@ function LiveFilter:clear_filter()
 
   self.filter = nil
   reset_filter(self)
+
+  if self.open_folders then
+    local keep_open = {}
+    local focused = node or self.prev_focused_node
+    local ancestor = focused and focused.parent
+    while ancestor do
+      keep_open[ancestor.absolute_path] = true
+      ancestor = ancestor.parent
+    end
+    for_each_folder(self.explorer.nodes, function(dir)
+      dir.open = self.open_folders[dir.absolute_path] or keep_open[dir.absolute_path] or false
+    end)
+    self.open_folders = nil
+  end
+
   self.explorer.renderer:draw()
 
   if node then

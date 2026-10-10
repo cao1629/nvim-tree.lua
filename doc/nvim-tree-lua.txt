@@ -1640,6 +1640,18 @@ Config: live_filter                             *nvim-tree-config-live-filter*
     Fields: ~
       • {always_show_folders}?  (`boolean`, default: `true`) Whether to filter
                                 folders or not.
+      • {expand_folders}?       (`boolean`, default: `false`) Expand all
+                                folders when filtering starts so that
+                                collapsed folders are searched too, limited by
+                                |nvim_tree.config.actions.expand_all|. Folders
+                                return to their previous state when the filter
+                                is cleared, apart from the ancestors of the
+                                node under the cursor.
+      • {fuzzy}?                (`boolean`, default: `false`) Match the filter
+                                as a fuzzy pattern instead of a
+                                |regular-expression|: its characters must
+                                appear in the name in order, case is ignored
+                                and space separated terms must all match.
       • {prefix}?               (`string`, default: `"[FILTER]: "`) Prefix of
                                 the filter displayed in the buffer.
 
@@ -2140,6 +2152,8 @@ Following is the default configuration, see |nvim_tree.config| for details. >lua
       live_filter = {
         prefix = "[FILTER]: ",
         always_show_folders = true,
+        fuzzy = false,
+        expand_folders = false,
       },
       filesystem_watchers = {
         enable = true,

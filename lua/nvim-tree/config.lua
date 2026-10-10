@@ -216,6 +216,8 @@ M.d = { -- config-default-start
   live_filter = {
     prefix = "[FILTER]: ",
     always_show_folders = true,
+    fuzzy = false,
+    expand_folders = false,
   },
   filesystem_watchers = {
     enable = true,
