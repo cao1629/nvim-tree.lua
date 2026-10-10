@@ -86,9 +86,6 @@ local function refactored_config(u)
   -- 2023/07/16
   move(u, "git", "ignore", u, "filters", "git_ignored", true)
 
-  -- 2023/08/26
-  move(u, "renderer.icons", "webdev_colors", u, "renderer.icons.web_devicons.file", "color", true)
-
   -- 2023/10/08
   if type(u.renderer) == "table" and type(u.renderer.highlight_diagnostics) == "boolean" then
     u.renderer.highlight_diagnostics = u.renderer.highlight_diagnostics and "name" or "none"
@@ -106,13 +103,6 @@ local function refactored_config(u)
     end
   end
   move(u, "update_focused_file", "ignore_list", u, "update_focused_file.update_root", "ignore_list", true)
-
-  -- 2025/04/30
-  if u.renderer and u.renderer.icons and type(u.renderer.icons.padding) == "string" then
-    local icons_padding = u.renderer.icons.padding --[[@as string]]
-    u.renderer.icons.padding = {}
-    u.renderer.icons.padding.icon = icons_padding
-  end
 end
 
 ---@param u nvim_tree.config user supplied subset of config

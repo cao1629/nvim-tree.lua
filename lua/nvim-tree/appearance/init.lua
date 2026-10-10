@@ -43,19 +43,8 @@ M.HIGHLIGHT_GROUPS = {
   { group = "NvimTreeOpenedFolderName",        link = "Directory" },
   { group = "NvimTreeSymlinkFolderName",       link = "Directory" },
 
-  -- File Icons
-  { group = "NvimTreeFileIcon",                link = "NvimTreeNormal" },
-  { group = "NvimTreeSymlinkIcon",             link = "NvimTreeNormal" },
-
-  -- Folder Icons
-  { group = "NvimTreeFolderIcon",              def = "guifg=#8094b4 ctermfg=Blue" },
-  { group = "NvimTreeOpenedFolderIcon",        link = "NvimTreeFolderIcon" },
-  { group = "NvimTreeClosedFolderIcon",        link = "NvimTreeFolderIcon" },
-  { group = "NvimTreeFolderArrowClosed",       link = "NvimTreeIndentMarker" },
-  { group = "NvimTreeFolderArrowOpen",         link = "NvimTreeIndentMarker" },
-
   -- Indent
-  { group = "NvimTreeIndentMarker",            link = "NvimTreeFolderIcon" },
+  { group = "NvimTreeIndentMarker",            def = "guifg=#8094b4 ctermfg=Blue" },
 
   -- Picker
   { group = "NvimTreeWindowPicker",            def = "guifg=#ededed guibg=#4493c8 gui=bold ctermfg=White ctermbg=DarkBlue" },
@@ -69,17 +58,14 @@ M.HIGHLIGHT_GROUPS = {
   { group = "NvimTreeCopiedHL",                link = "SpellRare" },
 
   -- Bookmark
-  { group = "NvimTreeBookmarkIcon",            link = "NvimTreeFolderIcon" },
   { group = "NvimTreeBookmarkHL",              link = "SpellLocal" },
 
   -- Modified
-  { group = "NvimTreeModifiedIcon",            link = "Type" },
-  { group = "NvimTreeModifiedFileHL",          link = "NvimTreeModifiedIcon" },
+  { group = "NvimTreeModifiedFileHL",          link = "Type" },
   { group = "NvimTreeModifiedFolderHL",        link = "NvimTreeModifiedFileHL" },
 
   -- Hidden
-  { group = "NvimTreeHiddenIcon",              link = "Conceal" },
-  { group = "NvimTreeHiddenFileHL",            link = "NvimTreeHiddenIcon" },
+  { group = "NvimTreeHiddenFileHL",            link = "Conceal" },
   { group = "NvimTreeHiddenFolderHL",          link = "NvimTreeHiddenFileHL" },
 
   -- Hidden Display
@@ -88,23 +74,14 @@ M.HIGHLIGHT_GROUPS = {
   -- Opened
   { group = "NvimTreeOpenedHL",                link = "Special" },
 
-  -- Git Icon
-  { group = "NvimTreeGitDeletedIcon",          link = "Statement" },
-  { group = "NvimTreeGitDirtyIcon",            link = "Statement" },
-  { group = "NvimTreeGitIgnoredIcon",          link = "Comment" },
-  { group = "NvimTreeGitMergeIcon",            link = "Constant" },
-  { group = "NvimTreeGitNewIcon",              link = "PreProc" },
-  { group = "NvimTreeGitRenamedIcon",          link = "PreProc" },
-  { group = "NvimTreeGitStagedIcon",           link = "Constant" },
-
   -- Git File Highlight
-  { group = "NvimTreeGitFileDeletedHL",        link = "NvimTreeGitDeletedIcon" },
-  { group = "NvimTreeGitFileDirtyHL",          link = "NvimTreeGitDirtyIcon" },
-  { group = "NvimTreeGitFileIgnoredHL",        link = "NvimTreeGitIgnoredIcon" },
-  { group = "NvimTreeGitFileMergeHL",          link = "NvimTreeGitMergeIcon" },
-  { group = "NvimTreeGitFileNewHL",            link = "NvimTreeGitNewIcon" },
-  { group = "NvimTreeGitFileRenamedHL",        link = "NvimTreeGitRenamedIcon" },
-  { group = "NvimTreeGitFileStagedHL",         link = "NvimTreeGitStagedIcon" },
+  { group = "NvimTreeGitFileDeletedHL",        link = "Statement" },
+  { group = "NvimTreeGitFileDirtyHL",          link = "Statement" },
+  { group = "NvimTreeGitFileIgnoredHL",        link = "Comment" },
+  { group = "NvimTreeGitFileMergeHL",          link = "Constant" },
+  { group = "NvimTreeGitFileNewHL",            link = "PreProc" },
+  { group = "NvimTreeGitFileRenamedHL",        link = "PreProc" },
+  { group = "NvimTreeGitFileStagedHL",         link = "Constant" },
 
   -- Git Folder Highlight
   { group = "NvimTreeGitFolderDeletedHL",      link = "NvimTreeGitFileDeletedHL" },
@@ -114,12 +91,6 @@ M.HIGHLIGHT_GROUPS = {
   { group = "NvimTreeGitFolderNewHL",          link = "NvimTreeGitFileNewHL" },
   { group = "NvimTreeGitFolderRenamedHL",      link = "NvimTreeGitFileRenamedHL" },
   { group = "NvimTreeGitFolderStagedHL",       link = "NvimTreeGitFileStagedHL" },
-
-  -- Diagnostics Icon
-  { group = "NvimTreeDiagnosticErrorIcon",     link = "DiagnosticError" },
-  { group = "NvimTreeDiagnosticWarnIcon",      link = "DiagnosticWarn" },
-  { group = "NvimTreeDiagnosticInfoIcon",      link = "DiagnosticInfo" },
-  { group = "NvimTreeDiagnosticHintIcon",      link = "DiagnosticHint" },
 
   -- Diagnostics File Highlight
   { group = "NvimTreeDiagnosticErrorFileHL",   link = "DiagnosticUnderlineError" },
@@ -136,19 +107,7 @@ M.HIGHLIGHT_GROUPS = {
 
 -- nvim-tree highlight groups to legacy
 M.LEGACY_LINKS = {
-  NvimTreeModifiedIcon = "NvimTreeModifiedFile",
-
   NvimTreeOpenedHL = "NvimTreeOpenedFile",
-
-  NvimTreeBookmarkIcon = "NvimTreeBookmark",
-
-  NvimTreeGitDeletedIcon = "NvimTreeGitDeleted",
-  NvimTreeGitDirtyIcon = "NvimTreeGitDirty",
-  NvimTreeGitIgnoredIcon = "NvimTreeGitIgnored",
-  NvimTreeGitMergeIcon = "NvimTreeGitMerge",
-  NvimTreeGitNewIcon = "NvimTreeGitNew",
-  NvimTreeGitRenamedIcon = "NvimTreeGitRenamed",
-  NvimTreeGitStagedIcon = "NvimTreeGitStaged",
 
   NvimTreeGitFileDeletedHL = "NvimTreeFileDeleted",
   NvimTreeGitFileDirtyHL = "NvimTreeFileDirty",
@@ -165,11 +124,6 @@ M.LEGACY_LINKS = {
   NvimTreeGitFolderNewHL = "NvimTreeFolderNew",
   NvimTreeGitFolderRenamedHL = "NvimTreeFolderRenamed",
   NvimTreeGitFolderStagedHL = "NvimTreeFolderStaged",
-
-  NvimTreeDiagnosticErrorIcon = "NvimTreeLspDiagnosticsError",
-  NvimTreeDiagnosticWarnIcon = "NvimTreeLspDiagnosticsWarning",
-  NvimTreeDiagnosticInfoIcon = "NvimTreeLspDiagnosticsInformation",
-  NvimTreeDiagnosticHintIcon = "NvimTreeLspDiagnosticsHint",
 
   NvimTreeDiagnosticErrorFileHL = "NvimTreeLspDiagnosticsErrorText",
   NvimTreeDiagnosticWarnFileHL = "NvimTreeLspDiagnosticsWarningText",

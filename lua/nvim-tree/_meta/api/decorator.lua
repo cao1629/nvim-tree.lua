@@ -1,16 +1,13 @@
 ---@meta
 
 ---@brief
----Highlighting and icons for nodes are provided by Decorators, see [nvim-tree-icons-highlighting] for an overview.
+---Highlighting for node names is provided by Decorators, see [nvim-tree-highlighting] for an overview.
 ---
 ---Decorators are rendered in [nvim_tree.config.renderer] {decorators} order of additive precedence, with later decorators applying additively over earlier.
 ---
 ---You may provide your own in addition to the builtin decorators, see |nvim-tree-class-decorator-example|.
 ---
----Decorators may:
----- Add icons
----- Set a highlight group name for the name or icons
----- Override node icon
+---Decorators set a highlight group name for the node name.
 ---
 ---To register your decorator:
 ---- Create a class that extends [nvim_tree.api.Decorator]
@@ -23,14 +20,9 @@
 ---- Provide a no-arguments constructor [nvim_tree.Class:new()] that sets the mandatory fields:
 ---   - {enabled}
 ---   - {highlight_range}
----   - {icon_placement}
----- Call [nvim_tree.api.Decorator:define_sign()] in your constructor when {icon_placement} is `"signcolumn"`
 ---
 ---Your class may:
----- Implement methods to provide decorations:
----   - [nvim_tree.api.Decorator:highlight_group()]
----   - [nvim_tree.api.Decorator:icon_node()]
----   - [nvim_tree.api.Decorator:icons()]
+---- Implement [nvim_tree.api.Decorator:highlight_group()] to provide the highlight
 
 local nvim_tree = { api = {} }
 
@@ -59,29 +51,8 @@ local Class = require("nvim-tree.classic")
 ---What to highlight: [nvim_tree.config.renderer.highlight]
 ---@field highlight_range nvim_tree.config.renderer.highlight
 ---
----Where to place the icons: [nvim_tree.config.renderer.icons.placement]
----@field icon_placement "none"|nvim_tree.config.renderer.icons.placement
----
 local Decorator = Class:extend()
 nvim_tree.api.Decorator = Decorator
-
----
----Icon to override for the node.
----
----Abstract, optional to implement.
----
----@param node nvim_tree.api.Node
----@return nvim_tree.api.highlighted_string? icon `nil` for no override
-function Decorator:icon_node(node) end
-
----
----Icons to add to the node as per {icon_placement}
----
----Abstract, optional to implement.
----
----@param node nvim_tree.api.Node
----@return nvim_tree.api.highlighted_string[]? icons `nil` or empty table for no icons. Only the first glyph of {str} is used when {icon_placement} is `"signcolumn"`
-function Decorator:icons(node) end
 
 ---
 ---One highlight group that applies additively to the {node} name for {highlight_range}.
@@ -91,13 +62,5 @@ function Decorator:icons(node) end
 ---@param node nvim_tree.api.Node
 ---@return string? highlight group name `nil` when no highlighting to apply to the node
 function Decorator:highlight_group(node) end
-
----
----Defines a sign for an icon. This is mandatory and necessary only when {icon_placement} is `"signcolumn"`
----
----This must be called during your constructor for all icons that you will return from [nvim_tree.api.Decorator:icons()]
----
----@param icon nvim_tree.api.highlighted_string? does nothing if nil
-function Decorator:define_sign(icon) end
 
 return nvim_tree.api.Decorator

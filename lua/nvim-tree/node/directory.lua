@@ -1,5 +1,4 @@
 local git_utils = require("nvim-tree.git.utils")
-local icons = require("nvim-tree.renderer.components.devicons")
 local notify = require("nvim-tree.notify")
 local Iterator = require("nvim-tree.iterators.node-iterator")
 
@@ -198,52 +197,7 @@ function DirectoryNode:expand_or_collapse(toggle_group)
   self.explorer.renderer:draw()
 end
 
----@return nvim_tree.api.highlighted_string icon
-function DirectoryNode:highlighted_icon()
-  if not self.explorer.opts.renderer.icons.show.folder then
-    return self:highlighted_icon_empty()
-  end
-
-  local str, hl
-
-  -- devicon if enabled and available
-  if self.explorer.opts.renderer.icons.web_devicons.folder.enable then
-    str, hl = icons.get_icon(self.name)
-    if not self.explorer.opts.renderer.icons.web_devicons.folder.color then
-      hl = nil
-    end
-  end
-
-  -- default icon from opts
-  if not str then
-    if #self.nodes ~= 0 or self.has_children then
-      if self.open then
-        str = self.explorer.opts.renderer.icons.glyphs.folder.open
-      else
-        str = self.explorer.opts.renderer.icons.glyphs.folder.default
-      end
-    else
-      if self.open then
-        str = self.explorer.opts.renderer.icons.glyphs.folder.empty_open
-      else
-        str = self.explorer.opts.renderer.icons.glyphs.folder.empty
-      end
-    end
-  end
-
-  -- default hl
-  if not hl then
-    if self.open then
-      hl = "NvimTreeOpenedFolderIcon"
-    else
-      hl = "NvimTreeClosedFolderIcon"
-    end
-  end
-
-  return { str = str, hl = { hl } }
-end
-
----@return nvim_tree.api.highlighted_string icon
+---@return nvim_tree.api.highlighted_string name
 function DirectoryNode:highlighted_name()
   local str, hl
 

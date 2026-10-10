@@ -108,21 +108,6 @@ end
 
 M.path_separator = path_separator
 
----@param extmarks vim.api.keyset.get_extmark_item[] as per vim.api.nvim_buf_get_extmarks
----@return number
-function M.extmarks_length(extmarks)
-  local length = 0
-  for _, extmark in ipairs(extmarks) do
-    local details = extmark[4]
-    if details and details.virt_text then
-      for _, text in ipairs(details.virt_text) do
-        length = length + vim.fn.strchars(text[1])
-      end
-    end
-  end
-  return length
-end
-
 M.default_format_hidden_count = function(hidden_count, simple)
   local parts = {}
   local total_count = 0

@@ -16,23 +16,12 @@ Introduction                                          *nvim-tree-introduction*
 Features
 
     - Automatic updates
-    - File type icons
     - Git integration
     - Diagnostics integration: LSP and COC
     - (Live) filtering
     - Rename, delete, create
     - Cut, copy, paste locally and between instances
     - Highly customisable
-
-File Icons
-
-    https://github.com/nvim-tree/nvim-web-devicons is optional and used to display file icons.
-    It requires a patched font: https://www.nerdfonts.com
-    Your terminal emulator must be configured to use that font, usually "Hack Nerd Font"
-
-     should look like an open folder.
-
-    Disable the display of icons with |nvim_tree.config.renderer.icons.show|
 
 Colours
 
@@ -41,15 +30,8 @@ Colours
 
 Git Integration
 
-    One or two icons for git status. When two are shown, the left is staged.
-
-      ✗  unstaged
-      ✓  staged
-        unmerged
-      ➜  renamed
-      ★  untracked
-        deleted
-      ◌  ignored
+    Git status is shown by highlighting the names of files and directories,
+    see |nvim_tree.config.renderer| {highlight_git}.
 
 Requirements
 
@@ -61,9 +43,8 @@ Requirements
 ==============================================================================
 Quickstart                                              *nvim-tree-quickstart*
 
-Install the plugins via your package manager:
+Install the plugin via your package manager:
   `"nvim-tree/nvim-tree.lua"`
-  `"nvim-tree/nvim-web-devicons"`
 
 Disabling |netrw| is strongly advised, see |nvim-tree-netrw|
 
@@ -483,39 +464,23 @@ Alternatively, you may apply these default mappings from your
 <
 
 ==============================================================================
-Icons And Highlighting                          *nvim-tree-icons-highlighting*
+Highlighting                                          *nvim-tree-highlighting*
 
-Icons may be displayed before files and directories.
+The names of files and directories may be highlighted to indicate various
+states. Highlighting is additive.
 
-Additional icons and highlighting may be displayed to indicate various states
-for files and and directories. Highlighting is additive.
-
-Decorators are responsible for providing the icons and highlighting. They
-apply additively in order of precedence.
+Decorators are responsible for providing the highlighting. They apply
+additively in order of precedence.
 
 `DECORATOR`
   See |nvim_tree.config.renderer.decorator| for available decorators and their
   default precedence.
 
-`ICON?`
-  Enable via |nvim_tree.config.renderer.icons.show
-
 `REQUIRES`
-  Features that must be enabled to show icons and highlighting.
-
-`PLACEMENT`
-  Where to place icons: |nvim_tree.config.renderer.icons.placement|
+  Features that must be enabled to show highlighting.
 
 `HIGHLIGHT`
   What should be highlighted: |nvim_tree.config.renderer.highlight|
-
-`DEVICONS?`
-  Glyphs and their colors will be overridden by optional plugin:
-  `nvim-tree/nvim-web-devicons`
-  See |nvim_tree.config.renderer.icons.web_devicons|
-
-`GLYPHS`
-  Icon glyphs definitions.
 
 `GROUPS`
   Applicable highlight groups: |nvim-tree-highlight-groups|
@@ -523,17 +488,15 @@ apply additively in order of precedence.
 Some defaults noted. In ascending order of default decorator additive
 precedence:
 
-`WHAT          DECORATOR     ICON?            REQUIRES                      PLACEMENT                             HIGHLIGHT                        GLYPHS                                              DEVICONS?  GROUPS`
-File Icon      -            {file}       Y    -                             -                                     -                               |nvim_tree.config.renderer.icons.glyphs| {default}    Y          `NvimTreeNormal`, `NvimTreeFileIcon`
-Folder Icon    -            {folder}     Y    -                             -                                     -                               |nvim_tree.config.renderer.icons.glyphs.folder|       Y          `NvimTree*FolderName`, `NvimTree*FolderIcon`
-Git Status    `"Git"`         {git}        Y   |nvim_tree.config.git|          {git_placement}        `"before"`       {highlight_git}         `"none"`   |nvim_tree.config.renderer.icons.glyphs.git|          N          `NvimTreeGit*`
-|bufloaded()|   `"Open"`         -                -                             -                                    {highlight_opened_files}`"none"`    -                                                  N         ` NvimTreeOpened*`
-Dotfiles      `"Hidden"`      {hidden}     N    -                            {hidden_placement}     `"after"`        {highlight_hidden}      `"none"`   |nvim_tree.config.renderer.icons.glyphs| {hidden}     N          `NvimTreeHidden*`
-|'modified'|    `"Modified"`    {modified}   Y   |nvim_tree.config.modified|     {modified_placement}   `"after"`        {highlight_modified}    `"none"`   |nvim_tree.config.renderer.icons.glyphs| {modified}   N          `NvimTreeModified*`
-Bookmarked    `"Bookmark"`    {bookmarks}  Y    -                            {bookmarks_placement}  `"signcolumn"`   {highlight_bookmarks}   `"none"`   |nvim_tree.config.renderer.icons.glyphs| {bookmark}   N          `NvimTreeBookmark*`
-Diag Status  ` "Diagnostics"` {diagnostics}Y   |nvim_tree.config.diagnostics|  {diagnostics_placement}`"signcolumn"`   {highlight_diagnostics} `"none" `  |nvim_tree.config.diagnostics.icons|                  N          `NvimTreeDiagnostic*`
-Copied        `"Copied"`       -                -                             -                                    {highlight_clipboard}   `"name"`    -                                                  N          `NvimTreeCopiedHL`
-Cut           `"Cut"`          -                -                             -                                    {highlight_clipboard}   `"name"`    -                                                  N          `NvimTreeCutHL`
+`WHAT          DECORATOR      REQUIRES                      HIGHLIGHT                          GROUPS`
+Git Status    `"Git"`          |nvim_tree.config.git|          {highlight_git}           `"none"`   `NvimTreeGit*`
+|bufloaded()|   `"Open"`         -                             {highlight_opened_files}  `"none"`   `NvimTreeOpened*`
+Dotfiles      `"Hidden"`       -                             {highlight_hidden}        `"none"`   `NvimTreeHidden*`
+|'modified'|    `"Modified"`     |nvim_tree.config.modified|     {highlight_modified}      `"none"`   `NvimTreeModified*`
+Bookmarked    `"Bookmark"`     -                             {highlight_bookmarks}     `"none"`   `NvimTreeBookmark*`
+Diag Status   `"Diagnostics"`  |nvim_tree.config.diagnostics|  {highlight_diagnostics}   `"none"`   `NvimTreeDiagnostic*`
+Copied        `"Copied"`       -                             {highlight_clipboard}     `"name"`   `NvimTreeCopiedHL`
+Cut           `"Cut"`          -                             {highlight_clipboard}     `"name"`   `NvimTreeCutHL`
 
 
 ==============================================================================
@@ -578,7 +541,8 @@ Highlight Groups: Default                 *nvim-tree-highlight-groups-default*
 Standard: >
     NvimTreeNormal              Normal
     NvimTreeNormalFloat         NormalFloat
-    NvimTreeNormalNC            NormalFloat
+    NvimTreeNormalFloatBorder   FloatBorder
+    NvimTreeNormalNC            NvimTreeNormal
 
     NvimTreeLineNr              LineNr
     NvimTreeWinSeparator        WinSeparator
@@ -594,10 +558,10 @@ Standard: >
     NvimTreeStatusLineNC        StatusLineNC
 <
 File Text: >
-    NvimTreeExecFile            SpellCap
-    NvimTreeImageFile           SpellCap
-    NvimTreeSpecialFile         SpellCap
-    NvimTreeSymlink             SpellCap
+    NvimTreeExecFile            Question
+    NvimTreeImageFile           Question
+    NvimTreeSpecialFile         Title
+    NvimTreeSymlink             Underlined
 <
 Folder Text: >
     NvimTreeRootFolder          Title
@@ -606,44 +570,30 @@ Folder Text: >
     NvimTreeOpenedFolderName    Directory
     NvimTreeSymlinkFolderName   Directory
 <
-File Icons: >
-    NvimTreeFileIcon            NvimTreeNormal
-    NvimTreeSymlinkIcon         NvimTreeNormal
-<
-Folder Icons: >
-    NvimTreeFolderIcon          guifg=#8094b4 ctermfg=Blue
-    NvimTreeOpenedFolderIcon    NvimTreeFolderIcon
-    NvimTreeClosedFolderIcon    NvimTreeFolderIcon
-    NvimTreeFolderArrowClosed   NvimTreeIndentMarker
-    NvimTreeFolderArrowOpen     NvimTreeIndentMarker
-<
 Indent: >
-    NvimTreeIndentMarker        NvimTreeFileIcon
+    NvimTreeIndentMarker        guifg=#8094b4 ctermfg=Blue
 <
 Picker: >
-    NvimTreeWindowPicker        guifg=#ededed guibg=#4493c8 gui=bold ctermfg=White ctermbg=Cyan
+    NvimTreeWindowPicker        guifg=#ededed guibg=#4493c8 gui=bold ctermfg=White ctermbg=DarkBlue
 <
 Live Filter: >
     NvimTreeLiveFilterPrefix    PreProc
     NvimTreeLiveFilterValue     ModeMsg
 <
 Clipboard: >
-    NvimTreeCopiedHL            SpellRare
     NvimTreeCutHL               SpellBad
+    NvimTreeCopiedHL            SpellRare
 <
 Bookmarks: >
-    NvimTreeBookmarkIcon        NvimTreeFolderIcon
     NvimTreeBookmarkHL          SpellLocal
 <
 Modified: >
-    NvimTreeModifiedIcon        Type
-    NvimTreeModifiedFileHL      NvimTreeModifiedIcon
-    NvimTreeModifiedFolderHL    NvimTreeModifiedIcon
-
+    NvimTreeModifiedFileHL      Type
+    NvimTreeModifiedFolderHL    NvimTreeModifiedFileHL
+<
 Hidden: >
-    NvimTreeModifiedIcon        Conceal
-    NvimTreeModifiedFileHL      NvimTreeHiddenIcon
-    NvimTreeModifiedFolderHL    NvimTreeHiddenFileHL
+    NvimTreeHiddenFileHL        Conceal
+    NvimTreeHiddenFolderHL      NvimTreeHiddenFileHL
 <
 Hidden Display: >
     NvimTreeHiddenDisplay       Conceal
@@ -651,23 +601,14 @@ Hidden Display: >
 Opened: >
     NvimTreeOpenedHL            Special
 <
-Git Icon: >
-    NvimTreeGitDeletedIcon      Statement
-    NvimTreeGitDirtyIcon        Statement
-    NvimTreeGitIgnoredIcon      Comment
-    NvimTreeGitMergeIcon        Constant
-    NvimTreeGitNewIcon          PreProc
-    NvimTreeGitRenamedIcon      PreProc
-    NvimTreeGitStagedIcon       Constant
-<
 Git File File Highlight: >
-    NvimTreeGitFileDeletedHL    NvimTreeGitDeletedIcon
-    NvimTreeGitFileDirtyHL      NvimTreeGitDirtyIcon
-    NvimTreeGitFileIgnoredHL    NvimTreeGitIgnoredIcon
-    NvimTreeGitFileMergeHL      NvimTreeGitMergeIcon
-    NvimTreeGitFileNewHL        NvimTreeGitNewIcon
-    NvimTreeGitFileRenamedHL    NvimTreeGitRenamedIcon
-    NvimTreeGitFileStagedHL     NvimTreeGitStagedIcon
+    NvimTreeGitFileDeletedHL    Statement
+    NvimTreeGitFileDirtyHL      Statement
+    NvimTreeGitFileIgnoredHL    Comment
+    NvimTreeGitFileMergeHL      Constant
+    NvimTreeGitFileNewHL        PreProc
+    NvimTreeGitFileRenamedHL    PreProc
+    NvimTreeGitFileStagedHL     Constant
 <
 Git Folder Folder Highlight: >
     NvimTreeGitFolderDeletedHL  NvimTreeGitFileDeletedHL
@@ -677,12 +618,6 @@ Git Folder Folder Highlight: >
     NvimTreeGitFolderNewHL      NvimTreeGitFileNewHL
     NvimTreeGitFolderRenamedHL  NvimTreeGitFileRenamedHL
     NvimTreeGitFolderStagedHL   NvimTreeGitFileStagedHL
-<
-Diagnostics Icon: >
-    NvimTreeDiagnosticErrorIcon         DiagnosticError
-    NvimTreeDiagnosticWarnIcon          DiagnosticWarn
-    NvimTreeDiagnosticInfoIcon          DiagnosticInfo
-    NvimTreeDiagnosticHintIcon          DiagnosticHint
 <
 Diagnostics File Highlight: >
     NvimTreeDiagnosticErrorFileHL       DiagnosticUnderlineError
@@ -900,8 +835,6 @@ needed.
 `view.adaptive_size`                 |nvim_tree.config.view| {width}
 `sort_by`                            |nvim_tree.config.sort| {sorter}
 `git.ignore`                         |nvim_tree.config.filters| {git_ignored}
-`renderer.icons.webdev_colors`       |nvim_tree.config.renderer.icons.web_devicons.file| {color}
-`renderer.icons.padding`             |nvim_tree.config.renderer.icons.padding| {icon}
 
 ==============================================================================
 Legacy: API                                             *nvim-tree-legacy-api*
@@ -931,17 +864,7 @@ Legacy: Highlight                                 *nvim-tree-legacy-highlight*
 Legacy highlight group are still obeyed when they are defined and the current
 highlight group is not, hard linking as follows: >
 
-    NvimTreeModifiedIcon        NvimTreeModifiedFile
     NvimTreeOpenedHL            NvimTreeOpenedFile
-    NvimTreeBookmarkIcon        NvimTreeBookmark
-
-    NvimTreeGitDeletedIcon      NvimTreeGitDeleted
-    NvimTreeGitDirtyIcon        NvimTreeGitDirty
-    NvimTreeGitIgnoredIcon      NvimTreeGitIgnored
-    NvimTreeGitMergeIcon        NvimTreeGitMerge
-    NvimTreeGitNewIcon          NvimTreeGitNew
-    NvimTreeGitRenamedIcon      NvimTreeGitRenamed
-    NvimTreeGitStagedIcon       NvimTreeGitStaged
 
     NvimTreeGitFileDeletedHL    NvimTreeFileDeleted
     NvimTreeGitFileDirtyHL      NvimTreeFileDirty
@@ -958,11 +881,6 @@ highlight group is not, hard linking as follows: >
     NvimTreeGitFolderNewHL      NvimTreeFolderNew
     NvimTreeGitFolderRenamedHL  NvimTreeFolderRenamed
     NvimTreeGitFolderStagedHL   NvimTreeFolderStaged
-
-    NvimTreeLspDiagnosticsError                 NvimTreeDiagnosticErrorIcon
-    NvimTreeLspDiagnosticsWarning               NvimTreeDiagnosticWarnIcon
-    NvimTreeLspDiagnosticsInformation           NvimTreeDiagnosticInfoIcon
-    NvimTreeLspDiagnosticsHint                  NvimTreeDiagnosticHintIcon
 
     NvimTreeLspDiagnosticsErrorText             NvimTreeDiagnosticErrorFileHL
     NvimTreeLspDiagnosticsWarningText           NvimTreeDiagnosticWarnFileHL
@@ -1160,8 +1078,8 @@ Config: view                                           *nvim-tree-config-view*
       • {relativenumber}?               (`boolean`, default: `false`)
                                         |'relativenumber'|
       • {side}?                         (`"left"|"right"`) (default: `"left"`)
-      • {signcolumn}?                   (`"yes"|"auto"|"no"`, default:
-                                        `"yes"`) |'signcolumn'|
+      • {signcolumn}?                   (`"yes"|"auto"|"no"`, default: `"no"`)
+                                        |'signcolumn'|
       • {width}?                        (`nvim_tree.config.view.width.spec|nvim_tree.config.view.width`)
                                         (default: `30`)
 
@@ -1208,15 +1126,13 @@ Config: renderer                                   *nvim-tree-config-renderer*
 
     {highlight_}                         *nvim_tree.config.renderer.highlight*
 
-    See |nvim-tree-icons-highlighting|
+    See |nvim-tree-highlighting|
     • `"none"`: no highlighting
-    • `"icon"`: icon only
-    • `"name"`: name only
-    • `"all"`: icon and name
+    • `"name"`: highlight the name
 
     {decorators}                         *nvim_tree.config.renderer.decorator*
 
-    See |nvim-tree-icons-highlighting|
+    See |nvim-tree-highlighting|
 
     A builtin decorator name `string` or |nvim_tree.api.Decorator| class.
 
@@ -1287,8 +1203,6 @@ Config: renderer                                   *nvim-tree-config-renderer*
                                    (default: `"none"`)
       • {highlight_opened_files}?  (`nvim_tree.config.renderer.highlight`)
                                    (default: `"none"`)
-      • {icons}?                   (`nvim_tree.config.renderer.icons`)
-                                   |nvim_tree.config.renderer.icons|
       • {indent_markers}?          (`nvim_tree.config.renderer.indent_markers`)
                                    |nvim_tree.config.renderer.indent_markers|
       • {indent_width}?            (`integer`, default: `2`) Number of spaces
@@ -1331,118 +1245,19 @@ Config: renderer                                   *nvim-tree-config-renderer*
       • {git}          (`integer`)
       • {live_filter}  (`integer`)
 
-*nvim_tree.config.renderer.icons*
-    Icons and separators
-
-    {_placement}                   *nvim_tree.config.renderer.icons.placement*
-    • `"before"`: before file/folder, after the file/folders icons
-    • `"after"`: after file/folder
-    • `"signcolumn"`: far left, requires |nvim_tree.config.view| {signcolumn}.
-    • `"right_align"`: far right
-
-    Fields: ~
-      • {bookmarks_placement}?    (`nvim_tree.config.renderer.icons.placement`)
-                                  (default: `signcolumn`)
-      • {diagnostics_placement}?  (`nvim_tree.config.renderer.icons.placement`)
-                                  (default: `signcolumn`)
-      • {git_placement}?          (`nvim_tree.config.renderer.icons.placement`)
-                                  (default: `before`)
-      • {glyphs}?                 (`nvim_tree.config.renderer.icons.glyphs`)
-                                  |nvim_tree.config.renderer.icons.glyphs|
-      • {hidden_placement}?       (`nvim_tree.config.renderer.icons.placement`)
-                                  (default: `after`)
-      • {modified_placement}?     (`nvim_tree.config.renderer.icons.placement`)
-                                  (default: `after`)
-      • {padding}?                (`table`)
-                                     *nvim_tree.config.renderer.icons.padding*
-                                  • {folder_arrow}? (`string`, default: `" "`)
-                                    Between folder arrow icon and file/folder
-                                    icon.
-                                  • {icon}? (`string`, default: `" "`) Between
-                                    icon and filename.
-      • {show}?                   (`nvim_tree.config.renderer.icons.show`)
-                                  |nvim_tree.config.renderer.icons.show|
-      • {symlink_arrow}?          (`string`, default: `" ➛ "`) Separator
-                                  between symlink source and target.
-      • {web_devicons}?           (`nvim_tree.config.renderer.icons.web_devicons`)
-                                  |nvim_tree.config.renderer.icons.web_devicons|
-
-*nvim_tree.config.renderer.icons.glyphs*
-    See |nvim-tree-icons-highlighting|.
-
-    Glyphs that appear in the sign column must have length <= 2
-
-    Fields: ~
-      • {bookmark}?  (`string`) (default: `"󰆤"`)
-      • {default}?   (`string`, default: `""`) Files
-      • {folder}?    (`table`)                     *nvim_tree.config.renderer.icons.glyphs.folder*
-                     • {arrow_closed}? (`string`) (default: left arrow)
-                     • {arrow_open}? (`string`) (default: down arrow)
-                     • {default}? (`string`) (default: `""`)
-                     • {empty}? (`string`) (default: `""`)
-                     • {empty_open}? (`string`) (default: `""`)
-                     • {open}? (`string`) (default: `""`)
-                     • {symlink}? (`string`) (default: `""`)
-                     • {symlink_open}? (`string`) (default: `""`)
-      • {git}?       (`table`)                        *nvim_tree.config.renderer.icons.glyphs.git*
-                     • {deleted}? (`string`) (default: `""`)
-                     • {ignored}? (`string`) (default: `"◌"`)
-                     • {renamed}? (`string`) (default: `"➜"`)
-                     • {staged}? (`string`) (default: `"✓"`)
-                     • {unmerged}? (`string`) (default: `""`)
-                     • {unstaged}? (`string`) (default: `"✗"`)
-                     • {untracked}? (`string`) (default: `"★"`)
-      • {hidden}?    (`string`) (default: `"󰜌"`)
-      • {modified}?  (`string`) (default: `"●"`)
-      • {symlink}?   (`string`) (default: `""`)
-
-*nvim_tree.config.renderer.icons.show*
-    See |nvim-tree-icons-highlighting|.
-
-    Fields: ~
-      • {bookmarks}?     (`boolean`) (default: `true`)
-      • {diagnostics}?   (`boolean`) (default: `true`)
-      • {file}?          (`boolean`) (default: `true`)
-      • {folder}?        (`boolean`) (default: `true`)
-      • {folder_arrow}?  (`boolean`, default: `true`) Show a small arrow
-                         before the folder node. Arrow will be a part of the
-                         node when using
-                         |nvim_tree.config.renderer.indent_markers|.
-      • {git}?           (`boolean`) (default: `true`)
-      • {hidden}?        (`boolean`) (default: `false`)
-      • {modified}?      (`boolean`) (default: `true`)
-
-*nvim_tree.config.renderer.icons.web_devicons*
-    Configure optional plugin `nvim-tree/nvim-web-devicons`, see
-    |nvim-tree-icons-highlighting|.
-
-    Fields: ~
-      • {file}?    (`table`)
-                           *nvim_tree.config.renderer.icons.web_devicons.file*
-                   • {color}? (`boolean`) (default: `true`)
-                   • {enable}? (`boolean`) (default: `true`)
-      • {folder}?  (`table`)
-                         *nvim_tree.config.renderer.icons.web_devicons.folder*
-                   • {color}? (`boolean`) (default: `true`)
-                   • {enable}? (`boolean`) (default: `false`)
-
 *nvim_tree.config.renderer.indent_markers*
 
     Fields: ~
-      • {enable}?         (`boolean`, default: `false`) Display indent markers
-                          when folders are open.
-      • {icons}?          (`table`)
+      • {enable}?  (`boolean`, default: `false`) Display indent markers when
+                   folders are open.
+      • {icons}?   (`table`)
                               *nvim_tree.config.renderer.indent_markers.icons*
-                          Before the file/directory, length 1.
-                          • {bottom}? (`string`) (default: `"─"`)
-                          • {corner}? (`string`) (default: `"└"`)
-                          • {edge}? (`string`) (default: `"│"`)
-                          • {item}? (`string`) (default: `"│"`)
-                          • {none}? (`string`) (default: `" "`)
-      • {inline_arrows}?  (`boolean`, default: `true`) Display folder arrows
-                          in the same column as indent marker when using
-                          |nvim_tree.config.renderer.icons.padding|
-                          {folder_arrow}
+                   Before the file/directory, length 1.
+                   • {bottom}? (`string`) (default: `"─"`)
+                   • {corner}? (`string`) (default: `"└"`)
+                   • {edge}? (`string`) (default: `"│"`)
+                   • {item}? (`string`) (default: `"│"`)
+                   • {none}? (`string`) (default: `" "`)
 
 ==============================================================================
 Config: hijack_directories               *nvim-tree-config-hijack-directories*
@@ -1505,7 +1320,7 @@ Config: git                                             *nvim-tree-config-git*
     • A list of relative paths evaluated with |fnamemodify()| `:p` OR
     • A function that is passed an absolute path and returns `true` to disable
 
-    See |nvim-tree-icons-highlighting|.
+    See |nvim-tree-highlighting|.
 
     Fields: ~
       • {cygwin_support}?     (`boolean`, default: `false`) Use `cygpath` if
@@ -1513,12 +1328,11 @@ Config: git                                             *nvim-tree-config-git*
       • {disable_for_dirs}?   (`string[]|(fun(path: string): boolean)`,
                               default: `{}`) Disable for top level paths.
       • {enable}?             (`boolean`) (default: `true`)
-      • {show_on_dirs}?       (`boolean`, default: `true`) Show status icons
-                              of children when directory itself has no status
-                              icon
-      • {show_on_open_dirs}?  (`boolean`, default: `true`) Show status icons
-                              of children on directories that are open.
-                              Requires {show_on_dirs}.
+      • {show_on_dirs}?       (`boolean`, default: `true`) Show the status of
+                              children when directory itself has no status
+      • {show_on_open_dirs}?  (`boolean`, default: `true`) Show the status of
+                              children on directories that are open. Requires
+                              {show_on_dirs}.
       • {timeout}?            (`integer`, default: `400`) `git` processes
                               timeout milliseconds.
 
@@ -1528,30 +1342,24 @@ Config: diagnostics                             *nvim-tree-config-diagnostics*
 *nvim_tree.config.diagnostics*
     Integrate with |lsp| or COC diagnostics.
 
-    See |nvim-tree-icons-highlighting|.
+    See |nvim-tree-highlighting|.
 
     Fields: ~
       • {debounce_delay}?     (`integer`, default: `500`) Idle milliseconds
                               between diagnostic event and tree update.
       • {diagnostic_opts}?    (`boolean`, default: `false`) Global
-                              |vim.diagnostic.Opts| overrides {severity} and
-                              {icons}
+                              |vim.diagnostic.Opts| overrides {severity}
       • {enable}?             (`boolean`) (default: `false`)
-      • {icons}?              (`table`)                                *nvim_tree.config.diagnostics.icons*
-                              • {error}? (`string`) (default: `""` )
-                              • {hint}? (`string`) (default: `""` )
-                              • {info}? (`string`) (default: `""` )
-                              • {warning}? (`string`) (default: `""` )
       • {severity}?           (`table`)
                                        *nvim_tree.config.diagnostics.severity*
                               • {max}? (`vim.diagnostic.Severity`, default:
                                 ERROR) |vim.diagnostic.severity|
                               • {min}? (`vim.diagnostic.Severity`, default:
                                 HINT) |vim.diagnostic.severity|
-      • {show_on_dirs}?       (`boolean`, default: `false`) Show diagnostic
-                              icons on parent directories.
-      • {show_on_open_dirs}?  (`boolean`, default: `true`) Show diagnostics
-                              icons on directories that are open. Requires
+      • {show_on_dirs}?       (`boolean`, default: `false`) Show diagnostics
+                              of children on parent directories.
+      • {show_on_open_dirs}?  (`boolean`, default: `true`) Show diagnostics of
+                              children on directories that are open. Requires
                               {show_on_dirs}.
 
 ==============================================================================
@@ -1559,11 +1367,9 @@ Config: modified                                   *nvim-tree-config-modified*
 
 *nvim_tree.config.modified*
     Indicate which files have unsaved modification. To see modified status in
-    the tree you will need:
-    • |nvim_tree.config.renderer.icons.show| {modified} OR
-    • |nvim_tree.config.renderer| {highlight_modified}
+    the tree you will need |nvim_tree.config.renderer| {highlight_modified}.
 
-    See |nvim-tree-icons-highlighting|.
+    See |nvim-tree-highlighting|.
 
     Fields: ~
       • {enable}?             (`boolean`) (default: `false`)
@@ -2000,7 +1806,7 @@ Following is the default configuration, see |nvim_tree.config| for details. >lua
         preserve_window_proportions = false,
         number = false,
         relativenumber = false,
-        signcolumn = "yes",
+        signcolumn = "no",
         width = 30,
         float = {
           enable = false,
@@ -2034,71 +1840,12 @@ Following is the default configuration, see |nvim_tree.config| for details. >lua
         highlight_clipboard = "name",
         indent_markers = {
           enable = false,
-          inline_arrows = true,
           icons = {
             corner = "└",
             edge = "│",
             item = "│",
             bottom = "─",
             none = " ",
-          },
-        },
-        icons = {
-          web_devicons = {
-            file = {
-              enable = true,
-              color = true,
-            },
-            folder = {
-              enable = false,
-              color = true,
-            },
-          },
-          git_placement = "before",
-          modified_placement = "after",
-          hidden_placement = "after",
-          diagnostics_placement = "signcolumn",
-          bookmarks_placement = "signcolumn",
-          padding = {
-            icon = " ",
-            folder_arrow = " ",
-          },
-          symlink_arrow = " ➛ ",
-          show = {
-            file = true,
-            folder = true,
-            folder_arrow = true,
-            git = true,
-            modified = true,
-            hidden = false,
-            diagnostics = true,
-            bookmarks = true,
-          },
-          glyphs = {
-            default = "",
-            symlink = "",
-            bookmark = "󰆤",
-            modified = "●",
-            hidden = "󰜌",
-            folder = {
-              arrow_closed = "",
-              arrow_open = "",
-              default = "",
-              open = "",
-              empty = "",
-              empty_open = "",
-              symlink = "",
-              symlink_open = "",
-            },
-            git = {
-              unstaged = "✗",
-              staged = "✓",
-              unmerged = "",
-              renamed = "➜",
-              untracked = "★",
-              deleted = "",
-              ignored = "◌",
-            },
           },
         },
       },
@@ -2130,12 +1877,6 @@ Following is the default configuration, see |nvim_tree.config| for details. >lua
         severity = {
           min = vim.diagnostic.severity.HINT,
           max = vim.diagnostic.severity.ERROR,
-        },
-        icons = {
-          hint = "",
-          info = "",
-          warning = "",
-          error = "",
         },
         diagnostic_opts = false,
       },
@@ -3294,8 +3035,8 @@ Class:nop({...})                                       *nvim_tree.Class:nop()*
 ==============================================================================
 Class: Decorator                                   *nvim-tree-class-decorator*
 
-Highlighting and icons for nodes are provided by Decorators, see
-|nvim-tree-icons-highlighting| for an overview.
+Highlighting for node names is provided by Decorators, see
+|nvim-tree-highlighting| for an overview.
 
 Decorators are rendered in |nvim_tree.config.renderer| {decorators} order of
 additive precedence, with later decorators applying additively over earlier.
@@ -3303,10 +3044,7 @@ additive precedence, with later decorators applying additively over earlier.
 You may provide your own in addition to the builtin decorators, see
 |nvim-tree-class-decorator-example|.
 
-Decorators may:
-• Add icons
-• Set a highlight group name for the name or icons
-• Override node icon
+Decorators set a highlight group name for the node name.
 
 To register your decorator:
 • Create a class that extends |nvim_tree.api.Decorator|
@@ -3321,15 +3059,10 @@ Your class must:
   mandatory fields:
   • {enabled}
   • {highlight_range}
-  • {icon_placement}
-• Call |nvim_tree.api.Decorator:define_sign()| in your constructor when
-  {icon_placement} is `"signcolumn"`
 
 Your class may:
-• Implement methods to provide decorations:
-  • |nvim_tree.api.Decorator:highlight_group()|
-  • |nvim_tree.api.Decorator:icon_node()|
-  • |nvim_tree.api.Decorator:icons()|
+• Implement |nvim_tree.api.Decorator:highlight_group()| to provide the
+  highlight
 
 
 *nvim_tree.api.Decorator*
@@ -3338,20 +3071,11 @@ Your class may:
     Decorator interface
 
     Fields: ~
-      • {define_sign}      (`fun(self: nvim_tree.api.Decorator, icon: nvim_tree.api.highlighted_string?)`)
-                           See |nvim_tree.api.Decorator:define_sign()|.
       • {enabled}          (`boolean`) Enable this decorator.
       • {highlight_group}  (`fun(self: nvim_tree.api.Decorator, node: nvim_tree.api.Node): string?`)
                            See |nvim_tree.api.Decorator:highlight_group()|.
       • {highlight_range}  (`nvim_tree.config.renderer.highlight`) What to
                            highlight: |nvim_tree.config.renderer.highlight|
-      • {icon_node}        (`fun(self: nvim_tree.api.Decorator, node: nvim_tree.api.Node): nvim_tree.api.highlighted_string?`)
-                           See |nvim_tree.api.Decorator:icon_node()|.
-      • {icon_placement}   (`"none"|nvim_tree.config.renderer.icons.placement`)
-                           Where to place the icons:
-                           |nvim_tree.config.renderer.icons.placement|
-      • {icons}            (`fun(self: nvim_tree.api.Decorator, node: nvim_tree.api.Node): nvim_tree.api.highlighted_string[]?`)
-                           See |nvim_tree.api.Decorator:icons()|.
 
 *nvim_tree.api.highlighted_string*
     Text or glyphs with optional highlight group names to apply to it.
@@ -3361,16 +3085,6 @@ Your class may:
                table for no highlighting.
       • {str}  (`string`) One or many glyphs/characters.
 
-
-Decorator:define_sign({icon})          *nvim_tree.api.Decorator:define_sign()*
-    Defines a sign for an icon. This is mandatory and necessary only when
-    {icon_placement} is `"signcolumn"`
-
-    This must be called during your constructor for all icons that you will
-    return from |nvim_tree.api.Decorator:icons()|
-
-    Parameters: ~
-      • {icon}  (`nvim_tree.api.highlighted_string?`) does nothing if nil
 
                                    *nvim_tree.api.Decorator:highlight_group()*
 Decorator:highlight_group({node})
@@ -3386,30 +3100,6 @@ Decorator:highlight_group({node})
         (`string?`) highlight group name `nil` when no highlighting to apply
         to the node
 
-Decorator:icon_node({node})              *nvim_tree.api.Decorator:icon_node()*
-    Icon to override for the node.
-
-    Abstract, optional to implement.
-
-    Parameters: ~
-      • {node}  (`nvim_tree.api.Node`)
-
-    Return: ~
-        (`nvim_tree.api.highlighted_string?`) icon `nil` for no override
-
-Decorator:icons({node})                      *nvim_tree.api.Decorator:icons()*
-    Icons to add to the node as per {icon_placement}
-
-    Abstract, optional to implement.
-
-    Parameters: ~
-      • {node}  (`nvim_tree.api.Node`)
-
-    Return: ~
-        (`nvim_tree.api.highlighted_string[]?`) icons `nil` or empty table for
-        no icons. Only the first glyph of {str} is used when {icon_placement}
-        is `"signcolumn"`
-
 
 ==============================================================================
 Class: Decorator example                   *nvim-tree-class-decorator-example*
@@ -3417,9 +3107,6 @@ Class: Decorator example                   *nvim-tree-class-decorator-example*
 A decorator class for nodes named "example", overriding all builtin decorators
 except for Cut.
 • Highlights node name with `IncSearch`
-• Creates two icons `"1"` and `"2"` placed after the node name, highlighted
-  with `DiffAdd` and `DiffText`
-• Replaces the node icon with `"N"`, highlighted with `Error `
 
 Create a class file `~/.config/nvim/lua/my-decorator.lua`
 
@@ -3447,9 +3134,6 @@ Require and register it during |nvim-tree-setup|: >lua
 Contents of `my-decorator.lua`: >lua
 
     ---@class (exact) MyDecorator: nvim_tree.api.Decorator
-    ---@field private my_icon1 nvim_tree.api.highlighted_string
-    ---@field private my_icon2 nvim_tree.api.highlighted_string
-    ---@field private my_icon_node nvim_tree.api.highlighted_string
     ---@field private my_highlight_group string
     local MyDecorator = require("nvim-tree.api").Decorator:extend()
 
@@ -3457,40 +3141,7 @@ Contents of `my-decorator.lua`: >lua
     function MyDecorator:new()
       self.enabled            = true
       self.highlight_range    = "name"
-      self.icon_placement     = "after"
-
-      -- create your icons and highlights once, applied to every node
-      self.my_icon1           = { str = "1", hl = { "DiffAdd" } }
-      self.my_icon2           = { str = "2", hl = { "DiffText" } }
-      self.my_icon_node       = { str = "N", hl = { "Error" } }
       self.my_highlight_group = "IncSearch"
-
-      -- Define the icon signs only once
-      -- Only needed if you are using icon_placement = "signcolumn"
-      -- self:define_sign(self.my_icon1)
-      -- self:define_sign(self.my_icon2)
-    end
-
-    ---Override node icon
-    ---@param node nvim_tree.api.Node
-    ---@return nvim_tree.api.highlighted_string? icon_node
-    function MyDecorator:icon_node(node)
-      if node.name == "example" then
-        return self.my_icon_node
-      else
-        return nil
-      end
-    end
-
-    ---Return two icons for DecoratorIconPlacement "after"
-    ---@param node nvim_tree.api.Node
-    ---@return nvim_tree.api.highlighted_string[]? icons
-    function MyDecorator:icons(node)
-      if node.name == "example" then
-        return { self.my_icon1, self.my_icon2, }
-      else
-        return nil
-      end
     end
 
     ---Exactly one highlight group for DecoratorHighlightRange "name"

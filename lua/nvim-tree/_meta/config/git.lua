@@ -11,18 +11,18 @@ error("Cannot require a meta file")
 --- - A list of relative paths evaluated with [fnamemodify()] `:p` OR
 --- - A function that is passed an absolute path and returns `true` to disable
 ---
----See [nvim-tree-icons-highlighting].
+---See [nvim-tree-highlighting].
 ---
 ---@class nvim_tree.config.git
 ---
 ---(default: `true`)
 ---@field enable? boolean
 ---
----Show status icons of children when directory itself has no status icon
+---Show the status of children when directory itself has no status
 ---(default: `true`)
 ---@field show_on_dirs? boolean
 ---
----Show status icons of children on directories that are open. Requires {show_on_dirs}.
+---Show the status of children on directories that are open. Requires {show_on_dirs}.
 ---(default: `true`)
 ---@field show_on_open_dirs? boolean
 ---

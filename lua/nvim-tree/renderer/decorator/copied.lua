@@ -13,7 +13,6 @@ function CopiedDecorator:new(args)
 
   self.enabled         = true
   self.highlight_range = self.explorer.opts.renderer.highlight_clipboard or "none"
-  self.icon_placement  = "none"
 end
 
 ---Copied highlight: renderer.highlight_clipboard and node is copied

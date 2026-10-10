@@ -49,7 +49,7 @@ error("Cannot require a meta file")
 ---@field relativenumber? boolean
 ---
 ---['signcolumn']
----(default: `"yes"`)
+---(default: `"no"`)
 ---@field signcolumn? "yes"|"auto"|"no"
 ---
 ---(default: `30`)

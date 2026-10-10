@@ -33,10 +33,8 @@ local BUILTIN_DECORATORS = {
 }
 
 ---@class (exact) Builder
----@field lines string[] includes icons etc.
+---@field lines string[]
 ---@field hl_range_args HighlightRangeArgs[] highlights for lines
----@field signs string[] line signs
----@field extmarks table[] extra marks for right icon placement
 ---@field virtual_lines table[] virtual lines for hidden count display
 ---@field private explorer Explorer
 ---@field private index number
@@ -64,8 +62,6 @@ function Builder:new(args)
   self.combined_groups = {}
   self.lines           = {}
   self.markers         = {}
-  self.signs           = {}
-  self.extmarks        = {}
   self.virtual_lines   = {}
   self.decorators      = {}
   self.hidden_display  = Builder:setup_hidden_display_function(self.explorer.opts)
@@ -124,100 +120,6 @@ function Builder:unwrap_highlighted_strings(highlighted_strings)
   return string
 end
 
----@private
----@param indent_markers nvim_tree.api.highlighted_string[]
----@param arrows? nvim_tree.api.highlighted_string[]
----@param icon nvim_tree.api.highlighted_string
----@param name nvim_tree.api.highlighted_string
----@param node Node
----@return nvim_tree.api.highlighted_string[]
-function Builder:format_line(indent_markers, arrows, icon, name, node)
-  local added_len = 0
-  local function add_to_end(t1, t2)
-    if not t2 or vim.tbl_isempty(t2) then
-      return
-    end
-    for _, v in ipairs(t2) do
-      if added_len > 0 then
-        table.insert(t1, { str = self.explorer.opts.renderer.icons.padding.icon })
-      end
-      table.insert(t1, v)
-    end
-
-    -- first add_to_end don't need padding
-    -- hence added_len is calculated at the end to be used next time
-    added_len = 0
-    for _, v in ipairs(t2) do
-      added_len = added_len + #v.str
-    end
-  end
-
-  local api_node = self.api_nodes and self.api_nodes[node.uid_node]
-  local b
-
-  local line = { indent_markers, arrows }
-  add_to_end(line, { icon })
-
-  for _, d in ipairs(self.decorators) do
-    b = d:as(BuiltinDecorator)
-    if b then
-      add_to_end(line, b:icons_before(node))
-    elseif api_node then
-      add_to_end(line, d:icons_before(api_node))
-    end
-  end
-
-  add_to_end(line, { name })
-
-  for _, d in ipairs(self.decorators) do
-    b = d:as(BuiltinDecorator)
-    if b then
-      add_to_end(line, b:icons_after(node))
-    elseif api_node then
-      add_to_end(line, d:icons_after(api_node))
-    end
-  end
-
-  local rights = {}
-  for _, d in ipairs(self.decorators) do
-    b = d:as(BuiltinDecorator)
-    if b then
-      add_to_end(rights, b:icons_right_align(node))
-    elseif api_node then
-      add_to_end(rights, d:icons_right_align(api_node))
-    end
-  end
-  if #rights > 0 then
-    self.extmarks[self.index] = rights
-  end
-
-  return line
-end
-
----@private
----@param node Node
-function Builder:build_signs(node)
-  local api_node = self.api_nodes and self.api_nodes[node.uid_node]
-
-  -- first in priority order
-  local d, b, sign_name
-  for i = #self.decorators, 1, -1 do
-    d = self.decorators[i]
-
-    b = d:as(BuiltinDecorator)
-    if b then
-      sign_name = b:sign_name(node)
-    elseif api_node then
-      sign_name = d:sign_name(api_node)
-    end
-
-    if sign_name then
-      self.signs[self.index] = sign_name
-      break
-    end
-  end
-end
-
 ---Create a highlight group for groups with later groups overriding previous.
 ---Combined group name is less than the 200 byte limit of highlight group names
 ---@private
@@ -246,55 +148,38 @@ function Builder:create_combined_group(groups)
   return combined_name
 end
 
----Calculate decorated icon and name for a node.
+---Calculate decorated name for a node.
 ---A combined highlight group will be created when there is more than one highlight.
 ---A highlight group is always calculated and upserted for the case of highlights changing.
 ---@private
 ---@param node Node
----@return nvim_tree.api.highlighted_string icon
 ---@return nvim_tree.api.highlighted_string name
-function Builder:icon_name_decorated(node)
+function Builder:name_decorated(node)
   local api_node = self.api_nodes and self.api_nodes[node.uid_node]
 
-  -- base case
-  local icon = node:highlighted_icon()
   local name = node:highlighted_name()
 
-  -- calculate node icon and all decorated highlight groups
-  local icon_groups = {}
   local name_groups = {}
-  local hl_icon, hl_name
+  local hl_name
   local b
   for _, d in ipairs(self.decorators) do
-    -- maybe override icon
     b = d:as(BuiltinDecorator)
     if b then
-      icon = b:icon_node(node) or icon
-      hl_icon, hl_name = b:highlight_group_icon_name(node)
+      hl_name = b:highlight_group_name(node)
     elseif api_node then
-      icon = d:icon_node(api_node) or icon
-      hl_icon, hl_name = d:highlight_group_icon_name(api_node)
+      hl_name = d:highlight_group_name(api_node)
     end
 
-    table.insert(icon_groups, hl_icon)
     table.insert(name_groups, hl_name)
   end
 
-  -- add one or many icon groups
-  if #icon_groups > 1 then
-    table.insert(icon.hl, self:create_combined_group(icon_groups))
-  else
-    table.insert(icon.hl, icon_groups[1])
-  end
-
-  -- add one or many name groups
   if #name_groups > 1 then
     table.insert(name.hl, self:create_combined_group(name_groups))
   else
     table.insert(name.hl, name_groups[1])
   end
 
-  return icon, name
+  return name
 end
 
 ---Insert node line into self.lines, calling Builder:build_lines for each directory
@@ -304,14 +189,10 @@ end
 ---@param num_children integer of node
 function Builder:build_line(node, idx, num_children)
   -- various components
-  local indent_markers = pad.get_indent_markers(self.depth, idx, num_children, node, self.markers)
-  local arrows = pad.get_arrows(node)
+  local indent_markers = pad.get_indent_markers(self.depth, idx, num_children, self.markers)
+  local name = self:name_decorated(node)
 
-  -- decorated node icon and name
-  local icon, name = self:icon_name_decorated(node)
-
-  local line = self:format_line(indent_markers, arrows, icon, name, node)
-  table.insert(self.lines, self:unwrap_highlighted_strings(line))
+  table.insert(self.lines, self:unwrap_highlighted_strings({ indent_markers, name }))
 
   self.index = self.index + 1
 
@@ -334,7 +215,7 @@ function Builder:add_hidden_count_string(node, idx, num_children)
   end
   local hidden_count_string = self.hidden_display(node.hidden_stats)
   if hidden_count_string and hidden_count_string ~= "" then
-    local indent_markers = pad.get_indent_markers(self.depth, idx or 0, num_children or 0, node, self.markers, 1)
+    local indent_markers = pad.get_indent_markers(self.depth, idx or 0, num_children or 0, self.markers, 1)
     local indent_width = self.explorer.opts.renderer.indent_width
 
     local indent_padding = string.rep(" ", indent_width)
@@ -379,7 +260,6 @@ function Builder:build_lines(node)
   local idx = 1
   for _, n in ipairs(node.nodes) do
     if not n.hidden then
-      self:build_signs(n)
       self:build_line(n, idx, num_children)
       idx = idx + 1
     end
@@ -430,7 +310,7 @@ function Builder:sanitize_lines()
   end, self.lines)
 end
 
----Build all lines with highlights and signs
+---Build all lines with highlights
 ---@return Builder
 function Builder:build()
   self:build_header()

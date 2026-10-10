@@ -1,5 +1,4 @@
 local git_utils = require("nvim-tree.git.utils")
-local icons = require("nvim-tree.renderer.components.devicons")
 local utils = require("nvim-tree.utils")
 
 local Node = require("nvim-tree.node")
@@ -48,35 +47,6 @@ function FileNode:get_git_xy()
   end
 
   return self.git_status.file and { self.git_status.file }
-end
-
----@return nvim_tree.api.highlighted_string icon
-function FileNode:highlighted_icon()
-  if not self.explorer.opts.renderer.icons.show.file then
-    return self:highlighted_icon_empty()
-  end
-
-  local str, hl
-
-  -- devicon if enabled and available, fallback to default
-  if self.explorer.opts.renderer.icons.web_devicons.file.enable then
-    str, hl = icons.get_icon(self.name, nil, { default = true })
-    if not self.explorer.opts.renderer.icons.web_devicons.file.color then
-      hl = nil
-    end
-  end
-
-  -- default icon from opts
-  if not str then
-    str = self.explorer.opts.renderer.icons.glyphs.default
-  end
-
-  -- default hl
-  if not hl then
-    hl = "NvimTreeFileIcon"
-  end
-
-  return { str = str, hl = { hl } }
 end
 
 ---@return nvim_tree.api.highlighted_string name

@@ -5,7 +5,7 @@ error("Cannot require a meta file")
 
 ---Integrate with [lsp] or COC diagnostics.
 ---
----See [nvim-tree-icons-highlighting].
+---See [nvim-tree-highlighting].
 ---
 ---@class nvim_tree.config.diagnostics
 ---
@@ -16,21 +16,19 @@ error("Cannot require a meta file")
 ---(default: `500`)
 ---@field debounce_delay? integer
 ---
----Show diagnostic icons on parent directories.
+---Show diagnostics of children on parent directories.
 ---(default: `false`)
 ---@field show_on_dirs? boolean
 ---
----Show diagnostics icons on directories that are open. Requires {show_on_dirs}.
+---Show diagnostics of children on directories that are open. Requires {show_on_dirs}.
 ---(default: `true`)
 ---@field show_on_open_dirs? boolean
 ---
----Global [vim.diagnostic.Opts] overrides {severity} and {icons}
+---Global [vim.diagnostic.Opts] overrides {severity}
 ---(default: `false`)
 ---@field diagnostic_opts? boolean
 ---
 ---@field severity? nvim_tree.config.diagnostics.severity
----
----@field icons? nvim_tree.config.diagnostics.icons
 
 
 
@@ -45,21 +43,3 @@ error("Cannot require a meta file")
 ---[vim.diagnostic.severity]
 ---(default: ERROR)
 ---@field max? vim.diagnostic.Severity
-
-
-
----[nvim_tree.config.diagnostics.icons]()
----@class nvim_tree.config.diagnostics.icons
----@inlinedoc
----
----(default: `""` )
----@field hint? string
----
----(default: `""` )
----@field info? string
----
----(default: `""` )
----@field warning? string
----
----(default: `""` )
----@field error? string

@@ -91,20 +91,6 @@ function Node:get_parent_of_group()
   end
 end
 
----Empty highlighted icon
----@protected
----@return nvim_tree.api.highlighted_string icon
-function Node:highlighted_icon_empty()
-  return { str = "", hl = {} }
-end
-
----Highlighted icon for the node
----Empty for base Node
----@return nvim_tree.api.highlighted_string icon
-function Node:highlighted_icon()
-  return self:highlighted_icon_empty()
-end
-
 ---Empty highlighted name
 ---@protected
 ---@return nvim_tree.api.highlighted_string name

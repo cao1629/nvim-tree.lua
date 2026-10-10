@@ -59,11 +59,6 @@ function M.show()
   local text_width = vim.fn.strdisplaywidth(vim.fn.substitute(line, "[^[:print:]]*$", "", "g"))
   local win_width = effective_win_width()
 
-  -- windows width reduced by right aligned icons
-  local icon_ns_id = vim.api.nvim_get_namespaces()["NvimTreeExtmarks"]
-  local icon_extmarks = vim.api.nvim_buf_get_extmarks(0, icon_ns_id, { line_nr - 1, 0 }, { line_nr - 1, -1 }, { details = true })
-  win_width = win_width - utils.extmarks_length(icon_extmarks)
-
   if text_width < win_width then
     return
   end

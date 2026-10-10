@@ -7,8 +7,6 @@
 
    Automatic updates
 
-   File type icons
-
    Git integration
 
    Diagnostics integration: LSP and COC
@@ -55,8 +53,6 @@ markdown-toc --maxdepth=2 -i README.md
 
 [Nvim >= 0.10](https://github.com/neovim/neovim/wiki/Installing-Neovim). At least `n - 0.1` stable Nvim compatibility is guaranteed. You may use a `compat-nvim-0.X` tag for earlier Nvim versions, however they will receive no updates or support.
 
-[nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons) is optional and used to display file icons. It requires a [patched font](https://www.nerdfonts.com/). Your terminal emulator must be configured to use that font, usually "Hack Nerd Font"
-
 # Installing
 
 Please install via your preferred package manager. See [Installation](https://github.com/nvim-tree/nvim-tree.lua/wiki/Installation) for some specific package manager instructions.
@@ -65,9 +61,8 @@ Major or minor versions may be specified via tags: `v<MAJOR>` e.g. `v1` or `v<MA
 
 # Quick Start
 
-Install the plugins via your package manager:
+Install the plugin via your package manager:
   `"nvim-tree/nvim-tree.lua"`
-  `"nvim-tree/nvim-web-devicons"`
 
 Disabling [netrw](https://neovim.io/doc/user/pi_netrw.html) is strongly advised, see [:help nvim-tree-netrw](doc/nvim-tree-lua.txt)
 

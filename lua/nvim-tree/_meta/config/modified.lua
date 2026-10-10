@@ -4,11 +4,9 @@ error("Cannot require a meta file")
 
 
 ---Indicate which files have unsaved modification.
----To see modified status in the tree you will need:
---- - [nvim_tree.config.renderer.icons.show] {modified} OR
---- - [nvim_tree.config.renderer] {highlight_modified}
+---To see modified status in the tree you will need [nvim_tree.config.renderer] {highlight_modified}.
 ---
----See [nvim-tree-icons-highlighting].
+---See [nvim-tree-highlighting].
 ---
 ---@class nvim_tree.config.modified
 ---

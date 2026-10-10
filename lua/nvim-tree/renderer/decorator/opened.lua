@@ -3,7 +3,6 @@ local buffers = require("nvim-tree.buffers")
 local BuiltinDecorator = require("nvim-tree.renderer.decorator.builtin")
 
 ---@class (exact) OpenDecorator: BuiltinDecorator
----@field private icon? nvim_tree.api.highlighted_string
 local OpenDecorator = BuiltinDecorator:extend()
 
 ---@class OpenDecorator
@@ -16,7 +15,6 @@ function OpenDecorator:new(args)
 
   self.enabled         = true
   self.highlight_range = self.explorer.opts.renderer.highlight_opened_files or "none"
-  self.icon_placement  = "none"
 end
 
 ---Opened highlight: renderer.highlight_opened_files and node has an open buffer
